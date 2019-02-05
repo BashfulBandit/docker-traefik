@@ -1,0 +1,637 @@
+## traefik.toml for Traefik v1.5
+################################################################
+# Global configuration
+################################################################
+
+##################
+## MAIN SECTION ##
+##################
+
+# DEPRECATED - for general usage instruction see [lifeCycle.graceTimeOut].
+#
+# If both the deprecated option and the new one are given, the deprecated one
+# takes precedence.
+# A value of zero is equivalent to omitting the parameter, causing
+# [lifeCycle.graceTimeOut] to be effective. Pass zero to the new option in
+# order to disable the grace period.
+#
+# Optional
+# Default: "0s"
+#
+# graceTimeOut = "10s"
+
+# Enable debug mode.
+# This will install HTTP handlers to expose Go expvars under /debug/vars and
+# pprof profiling data under /debug/pprof.
+# Additionally, the log level will be set to DEBUG.
+#
+# Optional
+# Default: false
+#
+# debug = true
+
+# Periodically check if a new version has been released
+#
+# Optional
+# Default: true
+#
+# checkNewVersion = false
+
+# Backends throttle duration: minimum duration in seconds between 2 events from providers
+# before applying a new configuration. It avoids unnecessary reloads if multiples events
+# are sent in a short amount of time.
+#
+# Optional
+# Default: "2s"
+#
+# ProvidersThrottleDuration = "5s"
+
+# If non-zero, controls the maximum idle (keep-alive) to keep per-host.  If zero, DefaultMaxIdleConnsPerHost is used.
+# If you encounter 'too many open files' errors, you can either change this value, or change `ulimit` value.
+#
+# Optional
+# Default: 200
+#
+# MaxIdleConnsPerHost = 200
+
+# If set to true invalid SSL certificates are accepted for backends.
+# Note: This disables detection of man-in-the-middle attacks so should only be used on secure backend networks.
+# Optional
+# Default: false
+#
+# InsecureSkipVerify = true
+
+# Entrypoints to be used by frontends that do not specify any entrypoint.
+# Each frontend can specify its own entrypoints.
+#
+# Optional
+# Default: ["http"]
+#
+defaultEntryPoints = ["http", "https"]
+
+###################
+
+#################
+## CONSTRAINTS ##
+#################
+#
+# Optional
+#
+# Simple matching constraint
+# constraints = ["tag==api"]
+#
+# Simple mismatching constraint
+# constraints = ["tag!=api"]
+#
+# Globbing
+# constraints = ["tag==us-*"]
+#
+# Backend-specific constraint
+# [consulCatalog]
+#   endpoint = 127.0.0.1:8500
+#   constraints = ["tag==api"]
+#
+# Multiple constraints
+#   - "tag==" must match with at least one tag
+#   - "tag!=" must match with none of tags
+# constraints = ["tag!=us-*", "tag!=asia-*"]
+# [consulCatalog]
+#   endpoint = 127.0.0.1:8500
+#   constraints = ["tag==api", "tag!=v*-beta"]
+
+################
+
+##########
+## LOGS ##
+##########
+
+# Traefik logs file
+# If not defined, logs to stdout
+#
+# DEPRECATED - see [traefikLog] lower down
+# In case both traefikLogsFile and traefikLog.filePath are specified, the latter will take precedence.
+# Optional
+#
+#traefikLogsFile = "log/traefik.log"
+[traefikLog]
+  filePath = "/etc/traefik/logs/traefik.log"
+
+# Log level
+#
+# Optional
+# Default: "ERROR"
+#
+# Accepted values, in order of severity: "DEBUG", "INFO", "WARN", "ERROR", "FATAL", "PANIC"
+# Messages at and above the selected level will be logged.
+#
+logLevel = "ERROR"
+
+# Access logs file
+#
+# DEPRECATED - see [accessLog] lower down
+#
+#accessLogsFile = "log/access.log"
+[accessLog]
+  filePath = "/etc/traefik/logs/access.log"
+
+##########
+
+###########
+## RETRY ##
+###########
+
+# Enable retry sending request if network error
+[retry]
+
+# Number of attempts
+#
+# Optional
+# Default: (number servers in backend) -1
+#
+# attempts = 3
+
+###########
+
+#################
+## HEALTHCHECK ##
+#################
+
+# Enable custom health check options.
+# [healthcheck]
+
+# Set the default health check interval.
+#
+# Optional
+# Default: "30s"
+#
+# interval = "30s"
+
+#################
+
+################
+## LIFE CYCLE ##
+################
+
+# [lifeCycle]
+
+# Duration to keep accepting requests prior to initiating the graceful
+# termination period (as defined by the `graceTimeOut` option). This
+# option is meant to give downstream load-balancers sufficient time to
+# take Traefik out of rotation.
+# Can be provided in a format supported by [time.ParseDuration](https://golang.org/pkg/time/#ParseDuration) or as raw values (digits).
+# If no units are provided, the value is parsed assuming seconds.
+# The zero duration disables the request accepting grace period, i.e.,
+# Traefik will immediately proceed to the grace period.
+#
+# Optional
+# Default: 0
+#
+# requestAcceptGraceTimeout = "10s"
+
+# Duration to give active requests a chance to finish before Traefik stops.
+# Can be provided in a format supported by [time.ParseDuration](https://golang.org/pkg/time/#ParseDuration) or as raw values (digits).
+# If no units are provided, the value is parsed assuming seconds.
+# Note: in this time frame no new requests are accepted.
+#
+# Optional
+# Default: "10s"
+#
+# graceTimeOut = "10s"
+
+################
+
+##############
+## TIMEOUTS ##
+##############
+
+# [respondingTimeouts]
+
+# readTimeout is the maximum duration for reading the entire request, including the body.
+#
+# Optional
+# Default: "0s"
+#
+# readTimeout = "5s"
+
+# writeTimeout is the maximum duration before timing out writes of the response.
+#
+# Optional
+# Default: "0s"
+#
+# writeTimeout = "5s"
+
+# idleTimeout is the maximum duration an idle (keep-alive) connection will remain idle before closing itself.
+#
+# Optional
+# Default: "180s"
+#
+# idleTimeout = "360s"
+
+# [forwardingTimeouts]
+
+# dialTimeout is the amount of time to wait until a connection to a backend server can be established.
+#
+# Optional
+# Default: "30s"
+#
+# dialTimeout = "30s"
+
+# responseHeaderTimeout is the amount of time to wait for a server's response headers after fully writing the request (including its body, if any).
+#
+# Optional
+# Default: "0s"
+#
+# responseHeaderTimeout = "0s"
+
+# IdleTimeout
+#
+# DEPRECATED - see [respondingTimeouts] section.
+#
+# Optional
+# Default: "180s"
+#
+# IdleTimeout = "360s"
+
+##############
+
+############################
+## Entrypoints definition ##
+############################
+
+[entryPoints]
+  [entryPoints.http]
+  address = ":80"
+    [entryPoints.http.redirect]
+    entryPoint = "https"
+  [entryPoints.https]
+  address = ":443"
+    [entryPoints.https.tls]
+
+#################################################
+## Enable ACME (Let's Encrypt): automatic SSL. ##
+#################################################
+
+[acme]
+
+  # Email address used for registration.
+  #
+  # Required
+  #
+  email = "glycam@gmail.com"
+
+  # File used for certificates storage.
+  #
+  # Optional (Deprecated)
+  #
+  #storageFile = "acme.json"
+
+  # File or key used for certificates storage.
+  #
+  # Required
+  #
+  storage = "/etc/traefik/acme.json"
+  # or `storage = "traefik/acme/account"` if using KV store.
+
+  # Entrypoint to proxy acme apply certificates to.
+  # WARNING, if the TLS-SNI-01 challenge is used, it must point to an entrypoint on port 443
+  #
+  # Required
+  #
+  entryPoint = "https"
+
+  # Use a DNS-01 acme challenge rather than TLS-SNI-01 challenge
+  #
+  # Optional (Deprecated, replaced by [acme.dnsChallenge])
+  #
+  # dnsProvider = "digitalocean"
+
+  # By default, the dnsProvider will verify the TXT DNS challenge record before letting ACME verify.
+  # If delayDontCheckDNS is greater than zero, avoid this & instead just wait so many seconds.
+  # Useful if internal networks block external DNS queries.
+  #
+  # Optional (Deprecated, replaced by [acme.dnsChallenge])
+  # Default: 0
+  #
+  # delayDontCheckDNS = 0
+
+  # If true, display debug log messages from the acme client library.
+  #
+  # Optional
+  # Default: false
+  #
+  # acmeLogging = true
+
+  # Enable on demand certificate generation.
+  #
+  # Optional (Deprecated)
+  # Default: false
+  #
+  # onDemand = true
+
+  # Enable certificate generation on frontends Host rules.
+  #
+  # Optional
+  # Default: false
+  #
+  onHostRule = true
+
+  # CA server to use.
+  # - Uncomment the line to run on the staging let's encrypt server.
+  # - Leave comment to go to prod.
+  #
+  # Optional
+  # Default: "https://acme-v01.api.letsencrypt.org/directory"
+  #
+  # caServer = "https://acme-staging.api.letsencrypt.org/directory"
+
+# Domains list.
+#
+# [[acme.domains]]
+#   main = "davist.xyz"
+#   sans = ["dev.davist.xyz"]
+# [[acme.domains]]
+#   main = "bigcheeseeventing.xyz"
+#   sans = ["dev.bigcheeeseeventing.xyz"]
+
+# Use a HTTP-01 acme challenge rather than TLS-SNI-01 challenge
+#
+# Optional but recommend
+#
+[acme.httpChallenge]
+
+  # EntryPoint to use for the challenges.
+  #
+  # Required
+  #
+  entryPoint = "http"
+
+# Use a DNS-01 acme challenge rather than TLS-SNI-01 challenge
+#
+# Optional
+#
+# [acme.dnsChallenge]
+
+  # Provider used.
+  #
+  # Required
+  #
+  # provider = "digitalocean"
+
+  # By default, the provider will verify the TXT DNS challenge record before letting ACME verify.
+  # If delayBeforeCheck is greater than zero, avoid this & instead just wait so many seconds.
+  # Useful if internal networks block external DNS queries.
+  #
+  # Optional
+  # Default: 0
+  #
+  # delayBeforeCheck = 0
+
+################################################################
+# Web configuration backend
+################################################################
+
+# Enable web configuration backend
+#
+# Optional
+#
+[web]
+
+  # Web administration port
+  #
+  # Required
+  #
+  address = ":8080"
+
+  # SSL certificate and key used
+  #
+  # Optional
+  #
+  # CertFile = "traefik.crt"
+  # KeyFile = "traefik.key"
+  #
+  # Set REST API to read-only mode
+  #
+  # Optional
+  # ReadOnly = false
+
+# Enable more detailed statistics
+# [web.statistics]
+#   RecentErrors = 10
+#
+# To enable Traefik to export internal metrics to Prometheus
+# [web.metrics.prometheus]
+#   Buckets=[0.1,0.3,1.2,5.0]
+
+# To enable basic auth on the webui
+# with 2 user/pass: test:test and test2:test2
+# Passwords can be encoded in MD5, SHA1 and BCrypt: you can use htpasswd to generate those ones
+#   [web.auth.basic]
+#     users = ["test:$apr1$H6uskkkW$IgXLP6ewTrSuBkTrqE8wj/", "test2:$apr1$d9hr9HBB$4HxwgUir3HP4EsggP/QNo0"]
+# To enable digest auth on the webui
+# with 2 user/realm/pass: test:traefik:test and test2:traefik:test2
+# You can use htdigest to generate those ones
+#   [web.auth.digest]
+#     users = ["test:traefik:a2688e031edb4be6a3797f3882655c05 ", "test2:traefik:518845800f9e2bfb1f1f740ec24f074e"]
+
+
+################################################################
+# File configuration backend
+################################################################
+
+# Enable file configuration backend
+#
+# Optional
+#
+# [file]
+
+  # Rules file
+  # If defined, traefik will load rules from this file,
+  # otherwise, it will load rules from current file (cf Sample rules below).
+  #
+  # Optional
+  #
+  # filename = "rules.toml"
+
+  # Enable watch file changes
+  #
+  # Optional
+  #
+  # watch = true
+
+
+################################################################
+# Docker configuration backend
+################################################################
+
+# Enable Docker configuration backend
+#
+# Optional
+#
+# [docker]
+
+  # Docker server endpoint. Can be a tcp or a unix socket endpoint.
+  #
+  # Required
+  #
+  # endpoint = "unix:///var/run/docker.sock"
+
+  # Default domain used.
+  # Can be overridden by setting the "traefik.domain" label on a container.
+  #
+  # Required
+  #
+  # domain = "localhost"
+
+  # Enable watch docker changes
+  #
+  # Optional
+  #
+  # watch = true
+
+  # Override default configuration template. For advanced users :)
+  #
+  # Optional
+  #
+  # filename = "docker.tmpl"
+
+  # Expose containers by default in traefik
+  #
+  # Optional
+  # Default: true
+  #
+  # exposedbydefault = true
+
+# Enable docker TLS connection
+#
+# Optional
+#
+#  [docker.tls]
+#  ca = "/etc/ssl/ca.crt"
+#  cert = "/etc/ssl/docker.crt"
+#  key = "/etc/ssl/docker.key"
+#  insecureskipverify = true
+
+
+
+################################################################
+# Docker Swarmmode configuration backend
+################################################################
+
+# Enable Docker configuration backend
+#
+# Optional
+#
+[docker]
+
+  # Docker server endpoint. Can be a tcp or a unix socket endpoint.
+  #
+  # Required
+  #
+  endpoint = "unix:///var/run/docker.sock"
+
+  # Default domain used.
+  # Can be overridden by setting the "traefik.domain" label on a services.
+  #
+  # Required
+  #
+  domain = "docker.local"
+
+  # Enable watch docker changes
+  #
+  # Optional
+  #
+  watch = true
+
+  # Use Docker Swarm Mode as data provider
+  #
+  # Optional
+  #
+  swarmmode = true
+
+  # Override default configuration template. For advanced users :)
+  #
+  # Optional
+  #
+  # filename = "docker.tmpl"
+
+  # Expose services by default in traefik
+  # If set to false, containers that don't have `traefik.enable=true` will be ignored
+  #
+  # Optional
+  # Default: true
+  #
+  exposedbydefault = false
+
+# Enable docker TLS connection
+#
+# Optional
+#
+#  [swarm.tls]
+#  ca = "/etc/ssl/ca.crt"
+#  cert = "/etc/ssl/docker.crt"
+#  key = "/etc/ssl/docker.key"
+#  insecureskipverify = true
+
+################################################################
+# Kubernetes Ingress configuration backend
+################################################################
+# Enable Kubernetes Ingress configuration backend
+#
+# Optional
+#
+# [kubernetes]
+
+  # Kubernetes server endpoint
+  #
+  # When deployed as a replication controller in Kubernetes,
+  # Traefik will use env variable KUBERNETES_SERVICE_HOST
+  # and KUBERNETES_SERVICE_PORT_HTTPS as endpoint
+  # Secure token will be found in /var/run/secrets/kubernetes.io/serviceaccount/token
+  # and SSL CA cert in /var/run/secrets/kubernetes.io/serviceaccount/ca.crt
+  #
+  # Optional
+  #
+  # endpoint = "http://localhost:8080"
+  # namespaces = ["default"]
+  #
+  # See: http://kubernetes.io/docs/user-guide/labels/#list-and-watch-filtering
+  # labelselector = "A and not B"
+
+################################################################
+# Sample rules
+################################################################
+# [backends]
+#   [backends.backend1]
+#     [backends.backend1.circuitbreaker]
+#       expression = "NetworkErrorRatio() > 0.5"
+#     [backends.backend1.servers.server1]
+#     url = "http://172.17.0.2:80"
+#     weight = 10
+#     [backends.backend1.servers.server2]
+#     url = "http://172.17.0.3:80"
+#     weight = 1
+#   [backends.backend2]
+#     [backends.backend2.LoadBalancer]
+#       method = "drr"
+#     [backends.backend2.servers.server1]
+#     url = "http://172.17.0.4:80"
+#     weight = 1
+#     [backends.backend2.servers.server2]
+#     url = "http://172.17.0.5:80"
+#     weight = 2
+#
+# [frontends]
+#   [frontends.frontend1]
+#   backend = "backend2"
+#     [frontends.frontend1.routes.test_1]
+#     rule = "Host: test.localhost, other.localhost"
+#   [frontends.frontend2]
+#   backend = "backend1"
+#   passHostHeader = true
+#   entrypoints = ["https"] # overrides defaultEntryPoints
+#     [frontends.frontend2.routes.test_1]
+#     rule = "Host:{subdomain:[a-z]+}.localhost"
+#   [frontends.frontend3]
+#   entrypoints = ["http", "https"] # overrides defaultEntryPoints
+#   backend = "backend2"
+#     rule = "Path: /test, /other"
