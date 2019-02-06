@@ -1,7 +1,7 @@
 # docker-traefik
 
 This repository is a demonstration on how to setup Traefik as just a basic container service or in
-Docker Swarm Mode. There are a number of other configurations you can do with this, but I tried to keep this simple. For other configuration options, take a look at [Traefik's Documentation](https://docs.traefik.io/).
+Docker Swarm Mode to automate HTTPS via Let's Encrypt. There are a number of other configurations you can do with this, but I tried to keep this simple. For other configuration options, take a look at [Traefik's Documentation](https://docs.traefik.io/).
 
 ## What is Traefik?
 
