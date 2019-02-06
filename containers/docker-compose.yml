@@ -41,7 +41,7 @@ services:
       --accessLog.filePath=/etc/traefik/logs/access.log
       --accessLog.format=json
       --traefikLog
-      --traefikLog.filePath=/etc/traefik/traefik.log
+      --traefikLog.filePath=/etc/traefik/logs/traefik.log
       --traefikLog.format=json
       --acme
       --acme.email=${EMAIL}
