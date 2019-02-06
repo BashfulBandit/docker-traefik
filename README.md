@@ -106,3 +106,9 @@ This is used for securing your Traefik Dashboard service. When you go to traefik
 ## Report an Issue
 
 If you have any issues with this repository and it's functionality, check out if there is already a GitHub issue submitted and if not, feel free to submit one [here](https://github.com/BashfulBandit/docker-traefik/issues).
+
+## Resources
+
+* [Docker](https://www.docker.com/) - a computer program that performs operating-system-level virtualization, also known as "containerization".
+* [Traefik](https://traefik.io/) - a reverse proxy / load balancer that's easy, dynamic, automatic, fast, full-featured, open source, production proven, provides metrics, and integrates with every major cluster technology.
+* [Let's Encrypt](https://letsencrypt.org/) - a certificate authority that provides X.509 certificates for Transport Layer Security (TLS) encryption at no charge.
