@@ -4,8 +4,13 @@ CONFIG=".env"
 
 if [ ! -f ${CONFIG} ]; then
 	echo """
+
+	ERROR:
+
 The ${CONFIG} file seems to be missing. Make sure you make your own ${CONFIG} file.
-See the example-${CONFIG} file to make your own.
+See the ${CONFIG}-example file to make your own. You can make your own by running:
+
+$ cp ${CONFIG}-example ${CONFIG}
 """
 	exit 1
 else
@@ -20,5 +25,10 @@ fi
 # Second, make log files.
 touch ./traefik/logs/{access.log,traefik.log}
 
+# We should probably check if this is necessary and/or if it fails.
+export HASHED_PASSWORD=$( openssl passwd -apr1 "$PASSWORD" )
+
 # Start the docker stack in Docker Swarm mode.
-docker stack deploy --compose-file docker-compose.yml traefik
+docker stack deploy \
+	--compose-file docker-compose.yml \
+	reverse-proxy

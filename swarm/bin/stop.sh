@@ -1,3 +1,3 @@
 #!/usr/bin/env bash
 
-docker stack rm traefik
+docker stack rm reverse-proxy
