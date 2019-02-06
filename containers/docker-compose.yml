@@ -1,0 +1,57 @@
+# Define which version of docker-compose file you are using.
+version: '3.7'
+
+# Traefik Docker Stack for Docker Swarm.
+services:
+  # Traefik Reverse-Proxy Service
+  traefik:
+    image: traefik:v1.7
+    networks:
+      - traefik-proxy-network
+    labels:
+      - traefik.frontend.rule=Host:traefik.${DOMAIN}
+      - traefik.docker.network:${PROXY_DOCKER_NETWORK}
+      - traefik.port=8080
+      - traefik.enable=true
+      # If you want to password protect this service. Also, Docker Secrets may be better for this
+      # and the acme.json file.
+      - traefik.frontend.auth.basic.users=${USERNAME}:${HASHED_PASSWORD}
+    ports:
+      - 80:80
+      - 443:443
+    # Note: It is know to big a vulnerability to mount Docker host Docker socket into a container
+    # because this can give container root user access to root user in host. There are workarounds
+    # to make Traefik work without this, but then the automatic service discovery doesn't work and
+    # you have to manually configure Traefik.
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - ./traefik:/etc/traefik
+    # Note: The --acme.tlsChallenge flag may be different for everyone's use case
+    # and may require other flags.
+    # I suggest looking through the Traefik Documentation to decide which kind of
+    # ACME Challenge is best for you.
+    # https://docs.traefik.io/configuration/acme/#acme-challenge
+    command: >
+      --docker
+      --docker.watch
+      --docker.exposedbydefault=false
+      --api
+      --logLevel=INFO
+      --accessLog
+      --accessLog.filePath=/etc/traefik/logs/access.log
+      --accessLog.format=json
+      --traefikLog
+      --traefikLog.filePath=/etc/traefik/traefik.log
+      --traefikLog.format=json
+      --acme
+      --acme.email=${EMAIL}
+      --acme.storage="/etc/traefik/acme.json"
+      --acme.entrypoint=https
+      --acme.tlsChallenge
+      --acme.onhostrule=true
+      --acme.acmelogging=true
+
+# Traefik Docker Networks for Docker Swarm
+networks:
+  traefik-proxy-network:
+    name: ${PROXY_DOCKER_NETWORK}
