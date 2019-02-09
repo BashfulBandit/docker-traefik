@@ -11,81 +11,60 @@ A reverse proxy / load balancer that's easy, dynamic, automatic, fast, full-feat
 
 ## How to use this repository
 
-First you will need to clone the repository locally:
+First, you will need to clone the repository locally:
 
 ```bash
 $ git clone https://github.com/BashfulBandit/docker-traefik.git
 ```
 
-Now depending on your usage, see the appropriate section below.
-
-### Docker Containers
-
-First, we need to change into the container directory in the repository.
-
-```bash
-$ cd docker-traefik/containers
-```
-
-Now you will need to create your own version of .env file and initialize the variables to your environment. See [Environment Variables](#environment-variables) section below for details.
-
-```bash
-$ cp .env-example .env
-$ <insert favorite text editor a.k.a vim> .env
-```
-
-Once you have setup your .env file with the your environments information, you can start the service.
-I have provided a simple script to do the rest of the setup for you.
+Now you will just need to run the start.sh BASH script.
 
 ```bash
 $ bash bin/start.sh
 ```
 
-After a little bit, you should be able to access your Traefik Dashboard using HTTPS via traefik.${DOMAIN}. Assuming you have the subdomain setup to send requests to your IP.
-
-### Docker Swarm Mode
-
-First, some things you need to consider when running in Docker Swarm Mode. The docker-compose.yml
-file will mount a host directory to the container directory to presever logs and the acme certificates
-between container starts and stops. To achieve this in Docker Swarm Mode, you will want to have a way
-to have the host directory be the same across all the Docker Nodes. I personally use NFS mounts to achieve this, but there are other ways. This is just mine.
-
-
-Once you have a Docker Swarm setup with common directory across all Docker Nodes and have cloned the repository locally. You will need to change into the swarm directory in the repository.
-
-```bash
-$ cd docker-traefik/swarm
-```
-
-Now you will need to create your own version of .env file and initialize the variables to your environment. See [Environment Variables](#environment-variables) section below for details.
-
-```bash
-$ cp .env-example .env
-$ <insert favorite text editor a.k.a vim> .env
-```
-
-Once you have setup your .env file with the your environments information, you can start the service.
-I have provided a simple script to do the rest of the setup for you.
-
-```bash
-$ bash bin/start.sh
-```
-
-After a little bit, you should be able to access your Traefik Dashboard using HTTPS via traefik.${DOMAIN}. Assuming you have the subdomain setup to send requests to your IP.
+This will take you through the process of determining if you are wanting to run this in Docker Swarm Mode or just as a single Docker Container.
+It will also set up the proper environment variables for you and store them in the .env file. See [Environment Variables](#environment-variables) section for me details.
 
 ## How to stop the service?
 
-For both Docker Swarm and container version, there is a provided script to stop their Traefik service. To run this script change directory into the version's directory and run:
+If you have previous run the start.sh script, you can easily stop everything by running the command below.
 
 ```bash
 $ bash bin/stop.sh
 ```
 
+## How to setup another service behind your Traefik Docker Service.
+
+If you want to setup a Docker service behind Traefik, which I am assuming that is your main goal for setting this up. You will need to configure the docker-compose file or your docker run script for the service to have Traefik recognize it.
+There are two main requirements for Traefik to be able to recognize the service and to be able to communicate with the service.
+
+* The Docker Service will need to be a part of the same Docker Network Traefik is a part of. The easiest way to do this is by attaching your Docker Service to the 'proxy-net' Docker Network made for Traefik. This can be done a number of different ways. See the example directory in this repository for one way.
+* The Docker Service will need some labels defined for Traefik to know how to handle requests to this service. Here are the main labels needed. See the example directory in this repository for an example.
+	* traefik.frontend.rule
+	* traefik.docker.network
+	* traefik.port
+	* traefik.enable
+
 ## Environment Variables
 
-### `PROXY_DOCKER_NETWORK`
+All these environment variables will be configured the first time you run the start.sh script, but you can manually configure them in your .env file.
 
-This is the name of the Docker Network that will be created. You will need to use this same Docker Network name for services you create behind Traefik for it to be able to communicate with them properly.
+### `DOCKER_START_COMMAND`
+
+This is the command used to start the Traefik Docker Service.
+
+### `DOCKER_STOP_COMMAND`
+
+This is the command used to stop the Traefik Docker Service.
+
+### `COMPOSE_FILE`
+
+This is the compose file used when starting and stopping your Traefik Docker Service.
+
+### `SERVICE_NAME`
+
+This is either the name of your Docker Swarm Stack or the Docker Container based on what environment you are running.
 
 ### `DOMAIN`
 
@@ -94,14 +73,6 @@ The name of your domain you want Traefik to proxy for. For this use case, it is 
 ### `EMAIL`
 
 The email address used for the ACME Challenge.
-
-### `USERNAME`
-
-This is used for securing your Traefik Dashboard service. When you go to traefik.$DOMAIN, it will prompt you for a username and password.
-
-### `PASSWORD`
-
-This is used for securing your Traefik Dashboard service. When you go to traefik.$DOMAIN, it will prompt you for a username and password.
 
 ## Report an Issue
 
