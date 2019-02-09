@@ -1,3 +1,4 @@
 *.env
 *.log
 *acme.json
+docker-compose.local.yml
