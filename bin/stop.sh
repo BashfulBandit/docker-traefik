@@ -2,7 +2,10 @@
 
 TEST=""
 
-# TODO Need to save SERVICE_NAME and COMPOSE_FILE to .env file or some other file.
+# Check to make sure the .env file exists. This file does two things for this script.
+# 1. Tells the script that the start.sh script has been run or someone manually
+# 	set up their .env file, which is okay as well.
+# 2. Defines some variables for this script and Docker.
 if [ ! -f .env ]; then
 	echo "The .env file seems to be missing. This script depends on that file."
 	exit 1
@@ -16,4 +19,5 @@ else
 	eval "${DOCKER_STOP_COMMAND}"
 fi
 
+# EXIT_SUCCESS
 exit 0

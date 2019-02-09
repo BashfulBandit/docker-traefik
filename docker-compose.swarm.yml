@@ -57,7 +57,6 @@ services:
       --acme.tlsChallenge
       --acme.onhostrule=true
       --acme.acmelogging=true
-      --acme.caServer="https://acme-staging-v02.api.letsencrypt.org/directory"
 
 # Traefik Docker Networks for Docker Swarm
 networks:
