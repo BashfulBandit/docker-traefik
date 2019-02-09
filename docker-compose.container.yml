@@ -6,16 +6,17 @@ services:
   # Traefik Reverse-Proxy Service
   traefik:
     image: traefik:v1.7
+    container_name: ${SERVICE_NAME}
     networks:
       - traefik-proxy-network
     labels:
       - traefik.frontend.rule=Host:traefik.${DOMAIN}
-      - traefik.docker.network:${PROXY_DOCKER_NETWORK}
+      - traefik.docker.network:proxy-net
       - traefik.port=8080
       - traefik.enable=true
       # If you want to password protect this service. Also, Docker Secrets may be better for this
       # and the acme.json file.
-      - traefik.frontend.auth.basic.users=${USERNAME}:${HASHED_PASSWORD}
+      # - traefik.frontend.auth.basic.users=${USERNAME}:${HASHED_PASSWORD}
     ports:
       - 80:80
       - 443:443
@@ -50,8 +51,9 @@ services:
       --acme.tlsChallenge
       --acme.onhostrule=true
       --acme.acmelogging=true
+      --acme.caServer="https://acme-staging-v02.api.letsencrypt.org/directory"
 
 # Traefik Docker Networks for Docker Swarm
 networks:
   traefik-proxy-network:
-    name: ${PROXY_DOCKER_NETWORK}
+    name: proxy-net

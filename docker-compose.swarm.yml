@@ -21,10 +21,10 @@ services:
         - traefik.frontend.rule=Host:traefik.${DOMAIN}
         - traefik.enable=true
         - traefik.port=8080
-        - traefik.docker.network=${PROXY_DOCKER_NETWORK}
+        - traefik.docker.network=proxy-net
         # If you want to password protect this service. Also, Docker Secrets may be better for this
         # and the acme.json file.
-        - traefik.frontend.auth.basic.users=${USERNAME}:${HASHED_PASSWORD}
+        # - traefik.frontend.auth.basic.users=${USERNAME}:${HASHED_PASSWORD}
     # Note: It is know to big a vulnerability to mount Docker host Docker socket into a container
     # because this can give container root user access to root user in host. There are workarounds
     # to make Traefik work without this, but then the automatic service discovery doesn't work and
@@ -57,8 +57,9 @@ services:
       --acme.tlsChallenge
       --acme.onhostrule=true
       --acme.acmelogging=true
+      --acme.caServer="https://acme-staging-v02.api.letsencrypt.org/directory"
 
 # Traefik Docker Networks for Docker Swarm
 networks:
   traefik-proxy-network:
-    name: ${PROXY_DOCKER_NETWORK}
+    name: proxy-net
